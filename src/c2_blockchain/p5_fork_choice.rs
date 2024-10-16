@@ -7,9 +7,9 @@
 //! Since we have nothing to add to the Block or Header data structures in this lesson,
 //! we will import them from the previous lesson.
 
+use super::p3_consensus::THRESHOLD;
 use super::p4_batched_extrinsics::{Block, Header};
 use crate::hash;
-use super::p3_consensus::THRESHOLD;
 
 /// Judge which blockchain is "best" when there are multiple candidates. There are several
 /// meaningful notions of "best" which is why this is a trait instead of just a
@@ -167,24 +167,15 @@ fn bc_5_mine_to_custom_difficulty() {
 fn bc_5_heaviest_chain() {
     let g = Header::genesis();
 
-    let mut i = 0;
-    let h_a1 = loop {
-        let header = g.child(hash(&[i]), i);
-        // Extrinsics root hash must be higher than threshold (less work done)
-        if hash(&header) > THRESHOLD {
-            break header;
-        }
-        i += 1;
-    };
+    let h_a1 = g.child(hash(&[1]), 1);
     let chain_1 = &[g.clone(), h_a1];
 
     let h_b1 = loop {
-        let header = g.child(hash(&[i]), i);
-        // Extrinsics root hash must be lower than threshold (more work done)
-        if hash(&header) < THRESHOLD {
+        let header = g.child(hash(&[1]), 1);
+        // more work done - harder to find such a hash
+        if hash(&header) < THRESHOLD / 1000 {
             break header;
         }
-        i += 1;
     };
     let chain_2 = &[g, h_b1];
 
